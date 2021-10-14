@@ -48,17 +48,18 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   //turnRight();
-int SensorReading = analogRead(leftSensor);
-Serial.println(SensorReading);
+int SensorReadingLeft = analogRead(leftSensor);
+int SensorReadingRight= analogRead(rightSensor);
+
+Serial.print(SensorReadingLeft);
+Serial.print(", ");
+Serial.print(SensorReadingRight);
+Serial.print(", ");
+int Difference = SensorReadingLeft - SensorReadingRight - 54;
+Serial.println(Difference);
+
+}
+
   
-  if (seesTape(leftSensor)){
-   Serial.println("sees tape");
-  }
-   else {
-   Serial.println("no tape");
-   
-   }
-   delay(200);
-   
-  }
+
   
