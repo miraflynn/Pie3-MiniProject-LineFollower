@@ -9,38 +9,18 @@ Adafruit_DCMotor *rightMotor = AFMS.getMotor(1);
 int leftSensor = A0;
 int rightSensor = A1;
 
-int turnSpeed = 50;
-int forwardSpeed = 50;
+//int turnSpeed = 50;
+int forwardSpeed = 30;
+
+float turnFactor = 0.1;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
-bool seesTape(int sensorPin){
-  int sv = analogRead(sensorPin);
-  if(sv > 800){
-    return true;
-  } else {
-    return false;
-  }
-}
 
-void turnRight(){
-  leftMotor->setSpeed(turnSpeed);
-  rightMotor->setSpeed(turnSpeed);
-  leftMotor->run(BACKWARD);
-  rightMotor->run(FORWARD);
-}
-
-void turnLeft(){
-  leftMotor->setSpeed(turnSpeed);
-  rightMotor->setSpeed(turnSpeed);
-  leftMotor->run(FORWARD);
-  rightMotor->run(BACKWARD);
-}
-
-void driveForward(){
-  leftMotor->setSpeed(forwardSpeed);
-  rightMotor->setSpeed(forwardSpeed);
+void drive(int lMotor, int rMotor){
+  leftMotor->setSpeed(lMotor);
+  rightMotor->setSpeed(rMotor);
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
 }
@@ -76,17 +56,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  turnRight();
+  int ls = analogRead(leftSensor);
+  int rs = analogRead(rightSensor);
+  int diff = (ls-rs-54)*turnFactor;
 
-  bool onTapeLeft = seesTape(leftSensor);
-  bool onTapeRight = seesTape(rightSensor);
-  if(onTapeLeft){
-    turnRight();
-  } else if (onTapeRight()){
-    turnLeft();
-  } else {
-    driveForward();
-  }
+  drive(forwardSpeed-diff, forwardSpeed+diff);
 
   if (stringComplete) {
     Serial.print(inputString);
