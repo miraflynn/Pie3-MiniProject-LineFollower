@@ -11,8 +11,9 @@ int rightSensor = A1;
 
 //int turnSpeed = 50;
 int forwardSpeed = 30;
+int calibrationdifference = 54;
 
-float turnFactor = 0.1;
+float turnFactor = 0.1/30;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
@@ -58,9 +59,13 @@ void loop() {
   // put your main code here, to run repeatedly:
   int ls = analogRead(leftSensor);
   int rs = analogRead(rightSensor);
-  int diff = (ls-rs-54)*turnFactor;
+  int diff = (ls-rs-calibrationdifference);
+  int turnSpeed = diff*forwardSpeed*turnFactor;
+  
 
-  drive(forwardSpeed-diff, forwardSpeed+diff);
+  
+
+  drive(forwardSpeed-turnSpeed, forwardSpeed+turnSpeed);
 
   if (stringComplete) {
     Serial.print(inputString);
