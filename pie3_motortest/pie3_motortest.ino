@@ -11,9 +11,9 @@ int rightSensor = A1;
 
 //int turnSpeed = 50;
 int forwardSpeed = 30;
-int calibrationdifference = 54;
+int calibrationdifference = -32;
 
-float turnFactor = 0.1/30;
+float turnFactor = 0.01; //Higher means more sensitive/turns more
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
@@ -61,11 +61,11 @@ void loop() {
   int rs = analogRead(rightSensor);
   int diff = (ls-rs-calibrationdifference);
   int turnSpeed = diff*forwardSpeed*turnFactor;
-  
-
-  
 
   drive(forwardSpeed-turnSpeed, forwardSpeed+turnSpeed);
+  Serial.print("driving");
+  Serial.println(forwardSpeed-turnSpeed);
+  Serial.println(forwardSpeed+turnSpeed);
 
   if (stringComplete) {
     Serial.print(inputString);

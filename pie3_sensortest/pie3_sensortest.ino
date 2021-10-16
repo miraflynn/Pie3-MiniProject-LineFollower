@@ -55,7 +55,7 @@ Serial.print(SensorReadingLeft);
 Serial.print(", ");
 Serial.print(SensorReadingRight);
 Serial.print(", ");
-int Difference = SensorReadingLeft - SensorReadingRight - 54;
+int Difference = SensorReadingLeft - SensorReadingRight +32;
 Serial.println(Difference);
 
 }
