@@ -10,9 +10,7 @@ Adafruit_DCMotor *rightMotor = AFMS.getMotor(1);
 int leftSensor = A0;
 int rightSensor = A1;
 
-//int turnSpeed = 50;
-int forwardSpeed = 30;
-int calibrationDifference = 54;
+
 
 float turnFactor = -0.01/30;
 
@@ -20,6 +18,9 @@ String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
 //Set Initial Constants: 
+int  fSpeed = 30; //forward speed motors are run at when driving straight
+int calibrationdifference = -32; //Manually set calibration factor that accounts for the resting difference between the incoming value of the two sensors
+float turnFactor = 0.001; //Contant to determine feedback sensitivity of turning based on sensor input. Higher means more sensitive/turns more
 
 //Function to drive the motors
 void drive(int lMotor, int rMotor){
@@ -61,7 +62,7 @@ void loop() {
   int ls = analogRead(leftSensor);
   int rs = analogRead(rightSensor);
   int diff = (ls-rs-calibrationDifference);
-  int turnSpeed = diff*forwardSpeed*turnFactor;
+  int turnSpeed = diff*fSpeed*turnFactor;
 
   Serial.println(turnSpeed);
 
@@ -84,13 +85,13 @@ void loop() {
 
 // Change the Turn Factor
  if (incoming == 'u'){
-    turnFactor = turnFactor + 0.01;
+    turnFactor = turnFactor + 0.001;
     Serial.print("New P = ");
     Serial.println(turnFactor);
   }
 
 if (incoming == 'd'){
-    turnFactor = turnFactor - 0.01;
+    turnFactor = turnFactor - 0.001;
     Serial.print("New P = ");
     Serial.println(turnFactor);
   }
