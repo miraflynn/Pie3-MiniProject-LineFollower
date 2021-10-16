@@ -13,7 +13,7 @@ int rightSensor = A1;
 //Set Initial Constants: 
 int  fSpeed = 30; //forward speed motors are run at when driving straight
 int calibrationdifference = -32; //Manually set calibration factor that accounts for the resting difference between the incoming value of the two sensors
-float turnFactor = 0.01; //Contant to determine feedback sensitivity of turning based on sensor input. Higher means more sensitive/turns more
+float turnFactor = 0.001; //Contant to determine feedback sensitivity of turning based on sensor input. Higher means more sensitive/turns more
 
 //Function to drive the motors
 void drive(int lMotor, int rMotor){
@@ -55,13 +55,13 @@ void loop() {
 
 // Change the Turn Factor
  if (incoming == 'u'){
-    turnFactor = turnFactor + 0.01;
+    turnFactor = turnFactor + 0.001;
     Serial.print("New P = ");
     Serial.println(turnFactor);
   }
 
 if (incoming == 'd'){
-    turnFactor = turnFactor - 0.01;
+    turnFactor = turnFactor - 0.001;
     Serial.print("New P = ");
     Serial.println(turnFactor);
   }
