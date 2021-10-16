@@ -11,19 +11,27 @@ int rightSensor = A1;
 
 //int turnSpeed = 50;
 int forwardSpeed = 30;
-int calibrationdifference = 54;
+int calibrationDifference = 54;
 
-float turnFactor = 0.1/30;
+float turnFactor = -0.01/30;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
 
 void drive(int lMotor, int rMotor){
-  leftMotor->setSpeed(lMotor);
-  rightMotor->setSpeed(rMotor);
-  leftMotor->run(FORWARD);
-  rightMotor->run(FORWARD);
+  leftMotor->setSpeed(abs(lMotor));
+  rightMotor->setSpeed(abs(rMotor));
+  if(lMotor >= 0){
+    leftMotor->run(FORWARD);
+  } else {
+    leftMotor->run(BACKWARD);
+  }
+  if(rMotor >= 0){
+    rightMotor->run(FORWARD);
+  } else {
+    rightMotor->run(BACKWARD);
+  }
 }
 
 /*
@@ -47,6 +55,11 @@ void serialEvent() {
 
 void setup() {
   // put your setup code here, to run once:
+  
+  int leftCal = analogRead(leftSensor);
+  int rightCal = analogRead(rightSensor);
+  calibrationDifference = leftCal-rightCal;
+  
   AFMS.begin();
   Serial.begin(9600);
   while (!Serial) {
@@ -59,9 +72,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   int ls = analogRead(leftSensor);
   int rs = analogRead(rightSensor);
-  int diff = (ls-rs-calibrationdifference);
+  int diff = (ls-rs-calibrationDifference);
   int turnSpeed = diff*forwardSpeed*turnFactor;
-  
+
+  Serial.println(turnSpeed);
 
   
 
