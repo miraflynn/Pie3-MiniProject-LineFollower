@@ -6,6 +6,7 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(2);
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(1);
 
+//Inititalize Input Pins:
 int leftSensor = A0;
 int rightSensor = A1;
 
@@ -18,7 +19,9 @@ float turnFactor = -0.01/30;
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
+//Set Initial Constants: 
 
+//Function to drive the motors
 void drive(int lMotor, int rMotor){
   leftMotor->setSpeed(abs(lMotor));
   rightMotor->setSpeed(abs(rMotor));
@@ -34,24 +37,6 @@ void drive(int lMotor, int rMotor){
   }
 }
 
-/*
-  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
-  routine is run between each time loop() runs, so using delay inside loop can
-  delay response. Multiple bytes of data may be available.
-*/
-void serialEvent() {
-  while (Serial.available()) {
-    // get the new byte:
-    char inChar = (char)Serial.read();
-    // add it to the inputString:
-    inputString += inChar;
-    // if the incoming character is a newline, set a flag so the main loop can
-    // do something about it:
-    if (inChar == '\n') {
-      stringComplete = true;
-    }
-  }
-}
 
 void setup() {
   // put your setup code here, to run once:
@@ -62,13 +47,16 @@ void setup() {
   
   AFMS.begin();
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  inputString.reserve(200); // reserve 200 bytes = 200 characters for the input string
+//  while (!Serial) {
+//    ; // wait for serial port to connect. Needed for native USB port only
+//  }
+// inputString.reserve(200); // reserve 200 bytes = 200 characters for the input string
+
 }
 
+
 void loop() {
+
   // put your main code here, to run repeatedly:
   int ls = analogRead(leftSensor);
   int rs = analogRead(rightSensor);
@@ -77,15 +65,47 @@ void loop() {
 
   Serial.println(turnSpeed);
 
-  
+  //Serial Port Controls:
+  uint8_t incoming;
+  incoming = Serial.read();
 
-  drive(forwardSpeed-turnSpeed, forwardSpeed+turnSpeed);
-
-  if (stringComplete) {
-    Serial.print(inputString);
-    // clear the string:
-    inputString = "";
-    stringComplete = false;
-    Serial.println("Hello computer!");
+// Change the Speed
+  if (incoming == '+'){
+    fSpeed = fSpeed + 10;
+    Serial.print("New Speed = ");
+    Serial.println(fSpeed);
   }
+
+   if (incoming == '-'){
+    fSpeed = fSpeed - 10;
+    Serial.print("New Speed = ");
+    Serial.println(fSpeed);
+   }
+
+// Change the Turn Factor
+ if (incoming == 'u'){
+    turnFactor = turnFactor + 0.01;
+    Serial.print("New P = ");
+    Serial.println(turnFactor);
+  }
+
+if (incoming == 'd'){
+    turnFactor = turnFactor - 0.01;
+    Serial.print("New P = ");
+    Serial.println(turnFactor);
+  }
+
+//Read Both Sensor Values and Find Differnce
+  int ls = analogRead(leftSensor);
+  int rs = analogRead(rightSensor);
+  int diff = (ls-rs-calibrationdifference); //calibrated diffence will be how much ls is bigger than rs when both seeing the same terrain
+//Calculate turn speed based on total speed and differnece between sensor values and sensitivity to change
+  int turnSpeed = diff*fSpeed*turnFactor;
+
+//Drive based on calculated Turn Speed:
+  drive(fSpeed-turnSpeed, fSpeed+turnSpeed);
+  
+ //Serial.print("driving");
+ // Serial.print(forwardSpeed-turnSpeed);
+ //Serial.println(forwardSpeed+turnSpeed);
 }
